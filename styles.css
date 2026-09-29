@@ -1,0 +1,222 @@
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(hsl(0 0 100%), hsl(0 0% 0%));
+  --fg: light-dark(hsl(0 0% 0%), hsl(0 0 100%));
+  --padding: max(4svmin, 1rem);
+  font-size: 16px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-weight: normal;
+  user-select: none;
+}
+
+@property --scroll-viewport-y-shift {
+  syntax: "<length>";
+  initial-value: 0px;
+  inherits: true;
+}
+
+@property --mouse-x {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+@keyframes shift-down {
+  to {
+    --scroll-viewport-y-shift: 100vh;
+  }
+}
+
+html,
+body {
+  overscroll-behavior-y: none;
+}
+
+body {
+  margin: 0;
+  width: 100svw;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background: #0a1022;
+
+  animation: shift-down 1ms linear both;
+  animation-timeline: scroll(y root);
+  animation-range: 0 100vh;
+}
+
+#highlighter {
+  display: none;
+}
+
+.parallax {
+  --max-depth: 0.9;
+  --max-horizontal-shift: 5vw;
+
+  width: 100vw;
+  height: 100vh;
+  margin-bottom: 300vh;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+
+  .layer {
+    --translate-x: calc(
+      -50% + (var(--max-horizontal-shift) * (var(--mouse-x) * -1) *
+            (0.05 + 0.95 * (1 - var(--layer-depth) / var(--max-depth))))
+    );
+    --translate-y: calc(var(--scroll-viewport-y-shift) * var(--layer-depth));
+    --fog-height: 50vmin;
+
+    width: calc(100vw + (2 * var(--max-horizontal-shift)));
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    translate: var(--translate-x) var(--translate-y);
+
+    &.clouds {
+      scale: 1;
+      animation: clouds 30s ease-in-out infinite alternate;
+    }
+
+    &.fog {
+      width: 200vw;
+      left: 0;
+      --translate-x: calc(
+        (
+          var(--max-horizontal-shift) * (var(--mouse-x) * -1) *
+            (var(--layer-depth) / var(--max-depth))
+        )
+      );
+
+      .fog-container {
+        width: 200vw;
+        height: var(--fog-height);
+        display: grid;
+        grid-template-columns: 100vw 100vw;
+        animation: fog 20s linear infinite;
+        align-items: end;
+
+        & > img {
+          width: 100%;
+          height: auto;
+        }
+      }
+    }
+
+    &.birds {
+      filter: blur(0.6px);
+      opacity: 0.5;
+      height: 100vh;
+
+      .birds-container {
+        display: grid;
+        width: 100%;
+        height: 100%;
+        place-content: center;
+
+        & > img {
+          scale: 0.2;
+          grid-area: 1 / 1;
+          translate: -100vh -100%;
+          animation: birds 18s linear infinite;
+
+          &:first-of-type {
+            animation-duration: 15s;
+            animation-delay: 2s;
+          }
+
+          &:nth-child(2) {
+            animation-duration: 16s;
+            animation-delay: 1s;
+            margin-top: -30px;
+          }
+        }
+      }
+    }
+  }
+
+  & > img:first-of-type {
+    width: auto;
+    height: 100vh;
+    min-width: 100vw;
+    top: 0;
+  }
+}
+
+@keyframes fog {
+  0% {
+    translate: 0 0;
+    opacity: 0.2;
+  }
+
+  10% {
+    translate: -10vw 0;
+    opacity: 0.3;
+  }
+
+  20% {
+    translate: -20vw 0;
+    opacity: 0.2;
+  }
+
+  30% {
+    translate: -30vw 0;
+    opacity: 0.4;
+  }
+
+  40% {
+    translate: -40vw 0;
+    opacity: 0.35;
+  }
+
+  50% {
+    translate: -50vw 0;
+    opacity: 0.6;
+  }
+
+  60% {
+    translate: -60vw 0;
+    opacity: 0.45;
+  }
+
+  70% {
+    translate: -70vw 0;
+    opacity: 0.55;
+  }
+
+  80% {
+    translate: -80vw 0;
+    opacity: 0.3;
+  }
+
+  90% {
+    translate: -90vw 0;
+    opacity: 0.45;
+  }
+
+  100% {
+    translate: -100vw 0;
+    opacity: 0.2;
+  }
+}
+
+@keyframes clouds {
+  to {
+    scale: 1.4;
+  }
+}
+
+@keyframes birds {
+  from {
+    translate: -100vh -100%;
+  }
+  to {
+    translate: 100vh -100%;
+  }
+}

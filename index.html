@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>3D Card Following Cursor</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="parallax">
+      <img
+        class="layer"
+        src="/images/layer_0.webp"
+        style="--layer-depth: 0.6"
+      />
+      <img
+        class="layer clouds"
+        src="/images/layer_1.webp"
+        style="--layer-depth: 0.575"
+      />
+      <img
+        class="layer"
+        src="/images/layer_2.webp"
+        style="--layer-depth: 0.55"
+      />
+      <img
+        class="layer"
+        src="/images/layer_3.webp"
+        style="--layer-depth: 0.5"
+      />
+
+      <img
+        class="layer"
+        src="/images/layer_4.webp"
+        style="--layer-depth: 0.45"
+      />
+      <img
+        class="layer"
+        src="/images/layer_5.webp"
+        style="--layer-depth: 0.4"
+      />
+      <img
+        class="layer"
+        src="/images/layer_6.webp"
+        style="--layer-depth: 0.3"
+      />
+      <div class="layer fog" style="--layer-depth: 0.1">
+        <div class="fog-container">
+          <img src="/images/fog.webp" />
+          <img src="/images/fog.webp" />
+        </div>
+      </div>
+      <div class="layer birds" style="--layer-depth: 0.5">
+        <div class="birds-container">
+          <img src="/images/bird-large-right.svg" />
+          <img src="/images/bird-lower-left.svg" />
+          <img src="/images/bird-small-top.svg" />
+        </div>
+      </div>
+      <img class="layer" src="/images/layer_7.webp" style="--layer-depth: 0" />
+    </div>
+    <script src="./index.js" type="module"></script>
+  </body>
+</html>
