@@ -3,15 +3,24 @@ function updateParallax(x, y) {
   document.documentElement.style.setProperty("--mouse-y", y);
 }
 
-let rafId;
+let rafId = 0;
+let pointerX = 0;
+let pointerY = 0;
 
-document.addEventListener("mousemove", (e) => {
-  cancelAnimationFrame(rafId);
+document.addEventListener("pointermove", (event) => {
+  const viewportWidth = document.documentElement.clientWidth;
+  const viewportHeight = document.documentElement.clientHeight;
+
+  pointerX = Math.max(-1, Math.min(1, (event.clientX * 2) / viewportWidth - 1));
+  pointerY = Math.max(
+    -1,
+    Math.min(1, (event.clientY * 2) / viewportHeight - 1),
+  );
+
+  if (rafId) return;
 
   rafId = requestAnimationFrame(() => {
-    const x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
-    const y = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
-
-    updateParallax(x, y);
+    updateParallax(pointerX, pointerY);
+    rafId = 0;
   });
 });

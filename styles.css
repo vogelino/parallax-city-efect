@@ -57,6 +57,8 @@ body {
 .parallax {
   --max-depth: 0.9;
   --max-horizontal-shift: 5vw;
+  /* Keep transformed image edges just outside the clip at every DPR. */
+  --layer-overscan: 4px;
 
   width: 100vw;
   height: 100vh;
@@ -73,11 +75,17 @@ body {
     --translate-y: calc(var(--scroll-viewport-y-shift) * var(--layer-depth));
     --fog-height: 50vmin;
 
-    width: calc(100vw + (2 * var(--max-horizontal-shift)));
+    width: calc(
+      100vw + (2 * var(--max-horizontal-shift)) +
+        (2 * var(--layer-overscan))
+    );
     position: absolute;
     bottom: 0;
     left: 50%;
-    translate: var(--translate-x) var(--translate-y);
+    display: block;
+    transform: translate3d(var(--translate-x), var(--translate-y), 0);
+    backface-visibility: hidden;
+    pointer-events: none;
 
     &.clouds {
       scale: 1;
@@ -103,6 +111,7 @@ body {
         align-items: end;
 
         & > img {
+          display: block;
           width: 100%;
           height: auto;
         }
@@ -123,8 +132,9 @@ body {
         & > img {
           scale: 0.2;
           grid-area: 1 / 1;
-          translate: -100vh -100%;
+          transform: translate3d(-100vh, -100%, 0);
           animation: birds 18s linear infinite;
+          backface-visibility: hidden;
 
           &:first-of-type {
             animation-duration: 15s;
@@ -142,66 +152,64 @@ body {
   }
 
   & > img:first-of-type {
-    width: auto;
     height: 100vh;
-    min-width: 100vw;
     top: 0;
   }
 }
 
 @keyframes fog {
   0% {
-    translate: 0 0;
+    transform: translate3d(0, 0, 0);
     opacity: 0.2;
   }
 
   10% {
-    translate: -10vw 0;
+    transform: translate3d(-10vw, 0, 0);
     opacity: 0.3;
   }
 
   20% {
-    translate: -20vw 0;
+    transform: translate3d(-20vw, 0, 0);
     opacity: 0.2;
   }
 
   30% {
-    translate: -30vw 0;
+    transform: translate3d(-30vw, 0, 0);
     opacity: 0.4;
   }
 
   40% {
-    translate: -40vw 0;
+    transform: translate3d(-40vw, 0, 0);
     opacity: 0.35;
   }
 
   50% {
-    translate: -50vw 0;
+    transform: translate3d(-50vw, 0, 0);
     opacity: 0.6;
   }
 
   60% {
-    translate: -60vw 0;
+    transform: translate3d(-60vw, 0, 0);
     opacity: 0.45;
   }
 
   70% {
-    translate: -70vw 0;
+    transform: translate3d(-70vw, 0, 0);
     opacity: 0.55;
   }
 
   80% {
-    translate: -80vw 0;
+    transform: translate3d(-80vw, 0, 0);
     opacity: 0.3;
   }
 
   90% {
-    translate: -90vw 0;
+    transform: translate3d(-90vw, 0, 0);
     opacity: 0.45;
   }
 
   100% {
-    translate: -100vw 0;
+    transform: translate3d(-100vw, 0, 0);
     opacity: 0.2;
   }
 }
@@ -214,9 +222,9 @@ body {
 
 @keyframes birds {
   from {
-    translate: -100vh -100%;
+    transform: translate3d(-100vh, -100%, 0);
   }
   to {
-    translate: 100vh -100%;
+    transform: translate3d(100vh, -100%, 0);
   }
 }
