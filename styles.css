@@ -38,6 +38,31 @@ body {
   display: none;
 }
 
+.tilt-permission {
+  position: fixed;
+  z-index: 10;
+  top: max(1rem, env(safe-area-inset-top));
+  left: 50%;
+  translate: -50% 0;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 999px;
+  color: white;
+  background: rgb(10 16 34 / 75%);
+  font: inherit;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.tilt-permission[hidden] {
+  display: none;
+}
+
+.tilt-permission:disabled {
+  opacity: 0.85;
+  cursor: default;
+}
+
 .parallax {
   --half-viewport-width: 50vw;
   --max-depth: 0.9;
@@ -256,13 +281,19 @@ body {
      * the screen gets taller. At 2x, half of the shared illustration canvas
      * remains visible. Keeping one width for every layer preserves alignment.
      */
-    --max-horizontal-shift: 0vw;
+    --max-horizontal-shift: min(8vw, 48px);
     --scene-width: clamp(100vw, 100svh, 200vw);
 
     .layer {
       left: auto;
-      right: 0;
-      --translate-x: 0px;
+      /* Portrait already crops a large part of the scene on the left. Offset
+       * it by the full tilt range so leftward movement cannot expose the
+       * right edge, without rendering an additional mirrored tile. */
+      right: calc(var(--max-horizontal-shift) * -1);
+      --translate-x: calc(
+        var(--max-horizontal-shift) * ((var(--mouse-x) - 1) / 2) *
+          (0.05 + 0.95 * (1 - var(--layer-depth) / var(--max-depth)))
+      );
       transform-origin: right bottom;
 
       &.fog {
@@ -271,6 +302,12 @@ body {
         left: 0;
         right: auto;
       }
+    }
+
+    /* The WebP's final source row is partially transparent. Push that row
+     * below the clip so Safari cannot blend it into a hairline at the join. */
+    & > .scene-layer:last-child {
+      bottom: -1px;
     }
   }
 }

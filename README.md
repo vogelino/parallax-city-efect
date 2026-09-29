@@ -14,6 +14,20 @@ pnpm dev
 Open the local URL printed by Vite (usually http://localhost:5173).
 `pnpm start` also starts the development server.
 
+### Test mobile sensors over HTTPS
+
+iOS only exposes motion and orientation sensors to secure pages. Start Vite and
+a temporary HTTPS tunnel together with:
+
+```sh
+pnpm tunnel
+```
+
+Open the printed `https://…loca.lt` URL on the iPhone and tap **Enable tilt**.
+Keep the command running while testing and press Ctrl+C when finished. The URL
+is temporary and publicly reachable, so do not share it or expose secrets
+through the development server.
+
 ## Production
 
 ```sh
