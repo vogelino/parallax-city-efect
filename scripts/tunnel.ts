@@ -11,14 +11,14 @@ const vite = await createServer({
   },
 });
 
-let tunnel;
+let closeTunnel = () => {};
 let shuttingDown = false;
 
 async function shutdown(exitCode = 0) {
   if (shuttingDown) return;
   shuttingDown = true;
 
-  tunnel?.close();
+  closeTunnel();
   await vite.close();
   process.exit(exitCode);
 }
@@ -26,23 +26,31 @@ async function shutdown(exitCode = 0) {
 try {
   await vite.listen();
 
-  const address = vite.httpServer.address();
+  const server = vite.httpServer;
+
+  if (!server) {
+    throw new Error("Vite started without an HTTP server.");
+  }
+
+  const address = server.address();
   const port = typeof address === "object" && address ? address.port : 5173;
 
-  tunnel = await localtunnel({
+  const tunnel = await localtunnel({
     port,
     local_host: "127.0.0.1",
   });
+  closeTunnel = () => tunnel.close();
 
   console.log(`\nHTTPS tunnel ready: ${tunnel.url}`);
   console.log("Open that URL on the iPhone, then tap Enable tilt.");
   console.log("Keep this process running; press Ctrl+C to close the tunnel.\n");
 
-  tunnel.on("error", (error) => {
+  tunnel.on("error", (error: Error) => {
     console.error("Tunnel error:", error.message);
   });
 } catch (error) {
-  console.error("Could not start the HTTPS tunnel:", error.message);
+  const message = error instanceof Error ? error.message : String(error);
+  console.error("Could not start the HTTPS tunnel:", message);
   await shutdown(1);
 }
 

@@ -8,115 +8,69 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <button class="tilt-permission" type="button" hidden>Enable tilt</button>
-    <div class="parallax">
-      <div
-        class="layer scene-layer"
-        style="
-          --layer-depth: 0.6;
-          --layer-image: url('/images/layer_0.webp');
-        "
-      >
-        <div class="layer-scroll scene-strip">
-          <img class="layer-tile" src="/images/layer_0.webp" alt="" />
+    <section class="parallax-experience" aria-label="Parallax city scene">
+      <button class="tilt-permission" type="button" hidden>Enable tilt</button>
+      <div class="parallax">
+        <div class="layer scene-layer" data-scene-layer="0">
+          <div class="layer-scroll scene-strip">
+            <img class="layer-tile" src="/images/layer_0.webp" alt="" />
+          </div>
         </div>
-      </div>
-      <div
-        class="layer scene-layer clouds"
-        style="
-          --layer-depth: 0.575;
-          --layer-image: url('/images/layer_1.webp');
-        "
-      >
-        <div class="layer-scroll scene-strip">
-          <img class="layer-tile" src="/images/layer_1.webp" alt="" />
+        <div class="layer scene-layer clouds" data-scene-layer="1">
+          <div class="layer-scroll scene-strip">
+            <img class="layer-tile" src="/images/layer_1.webp" alt="" />
+          </div>
         </div>
-      </div>
-      <div
-        class="layer scene-layer"
-        style="
-          --layer-depth: 0.55;
-          --layer-image: url('/images/layer_2.webp');
-        "
-      >
-        <div class="layer-scroll scene-strip">
-          <img class="layer-tile" src="/images/layer_2.webp" alt="" />
+        <div class="layer scene-layer" data-scene-layer="2">
+          <div class="layer-scroll scene-strip">
+            <img class="layer-tile" src="/images/layer_2.webp" alt="" />
+          </div>
         </div>
-      </div>
-      <div
-        class="layer scene-layer"
-        style="
-          --layer-depth: 0.5;
-          --layer-image: url('/images/layer_3.webp');
-        "
-      >
-        <div class="layer-scroll scene-strip">
-          <img class="layer-tile" src="/images/layer_3.webp" alt="" />
+        <div class="layer scene-layer" data-scene-layer="3">
+          <div class="layer-scroll scene-strip">
+            <img class="layer-tile" src="/images/layer_3.webp" alt="" />
+          </div>
         </div>
-      </div>
 
-      <div
-        class="layer scene-layer"
-        style="
-          --layer-depth: 0.45;
-          --layer-image: url('/images/layer_4.webp');
-        "
-      >
-        <div class="layer-scroll scene-strip">
-          <img class="layer-tile" src="/images/layer_4.webp" alt="" />
+        <div class="layer scene-layer" data-scene-layer="4">
+          <div class="layer-scroll scene-strip">
+            <img class="layer-tile" src="/images/layer_4.webp" alt="" />
+          </div>
         </div>
-      </div>
-      <div
-        class="layer scene-layer"
-        style="
-          --layer-depth: 0.4;
-          --layer-image: url('/images/layer_5.webp');
-        "
-      >
-        <div class="layer-scroll scene-strip">
-          <img class="layer-tile" src="/images/layer_5.webp" alt="" />
+        <div class="layer scene-layer" data-scene-layer="5">
+          <div class="layer-scroll scene-strip">
+            <img class="layer-tile" src="/images/layer_5.webp" alt="" />
+          </div>
         </div>
-      </div>
-      <div
-        class="layer scene-layer"
-        style="
-          --layer-depth: 0.3;
-          --layer-image: url('/images/layer_6.webp');
-        "
-      >
-        <div class="layer-scroll scene-strip">
-          <img class="layer-tile" src="/images/layer_6.webp" alt="" />
+        <div class="layer scene-layer" data-scene-layer="6">
+          <div class="layer-scroll scene-strip">
+            <img class="layer-tile" src="/images/layer_6.webp" alt="" />
+          </div>
         </div>
-      </div>
-      <div class="layer fog" style="--layer-depth: 0.1">
-        <div class="layer-scroll">
-          <div class="fog-container">
-            <img src="/images/fog.webp" />
-            <img src="/images/fog.webp" />
+        <div class="layer fog">
+          <div class="layer-scroll">
+            <div class="fog-container">
+              <img src="/images/fog.webp" alt="" />
+              <img src="/images/fog.webp" alt="" />
+            </div>
+          </div>
+        </div>
+        <div class="layer birds">
+          <div class="layer-scroll">
+            <div class="birds-container">
+              <img src="/images/bird-large-right.svg" alt="" />
+              <img src="/images/bird-lower-left.svg" alt="" />
+              <img src="/images/bird-small-top.svg" alt="" />
+            </div>
+          </div>
+        </div>
+        <div class="layer scene-layer" data-scene-layer="7">
+          <div class="layer-scroll scene-strip">
+            <img class="layer-tile" src="/images/layer_7.webp" alt="" />
           </div>
         </div>
       </div>
-      <div class="layer birds" style="--layer-depth: 0.5">
-        <div class="layer-scroll">
-          <div class="birds-container">
-            <img src="/images/bird-large-right.svg" />
-            <img src="/images/bird-lower-left.svg" />
-            <img src="/images/bird-small-top.svg" />
-          </div>
-        </div>
-      </div>
-      <div
-        class="layer scene-layer"
-        style="
-          --layer-depth: 0;
-          --layer-image: url('/images/layer_7.webp');
-        "
-      >
-        <div class="layer-scroll scene-strip">
-          <img class="layer-tile" src="/images/layer_7.webp" alt="" />
-        </div>
-      </div>
-    </div>
-    <script src="./index.js" type="module"></script>
+    </section>
+    <script src="./index.ts" type="module"></script>
   </body>
 </html>

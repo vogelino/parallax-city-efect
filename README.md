@@ -1,6 +1,6 @@
 # Parallax city effect
 
-A parallax city scene built with vanilla JavaScript, CSS, and Vite.
+A parallax city scene built with vanilla TypeScript, CSS, and Vite.
 
 ## Development
 
@@ -13,6 +13,12 @@ pnpm dev
 
 Open the local URL printed by Vite (usually http://localhost:5173).
 `pnpm start` also starts the development server.
+
+Run the strict TypeScript check independently with:
+
+```sh
+pnpm typecheck
+```
 
 ### Test mobile sensors over HTTPS
 
@@ -38,5 +44,7 @@ pnpm preview
 The production build is written to `dist/`. The preview command serves that
 build locally (usually http://localhost:4173).
 
-`index.html` is the Vite entry point, with the interaction in `index.js`, styles
-in `styles.css`, and scene assets in `images/`.
+`index.html` is the Vite entry point. `index.ts` and `styles.css` are lightweight
+page-level entry files. The parallax feature keeps its behavior and scoped styles
+together in `components/parallax/`; global page styles live in `styles/`, and
+scene assets live in `images/`.

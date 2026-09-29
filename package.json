@@ -1,14 +1,15 @@
 {
   "name": "html-css",
   "version": "1.0.0",
-  "description": "A vanilla JavaScript parallax city built with Vite",
+  "description": "A vanilla TypeScript parallax city built with Vite",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.6.0",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "start": "pnpm dev",
-    "tunnel": "node scripts/tunnel.js",
+    "tunnel": "node --experimental-strip-types scripts/tunnel.ts",
+    "typecheck": "tsc",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0"
   },
@@ -19,7 +20,10 @@
   "author": "Lucas Vogel (vogelino)",
   "license": "MIT",
   "devDependencies": {
+    "@types/localtunnel": "^2.0.4",
+    "@types/node": "^26.6.3",
     "localtunnel": "^2.0.2",
+    "typescript": "^7.0.2",
     "vite": "^8.3.1"
   }
 }

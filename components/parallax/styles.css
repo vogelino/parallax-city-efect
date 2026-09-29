@@ -1,0 +1,407 @@
+@property --mouse-x {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+.parallax-experience {
+  --mouse-x: 0;
+  --mouse-y: 0;
+
+  .tilt-permission {
+    position: fixed;
+    z-index: 10;
+    top: max(1rem, env(safe-area-inset-top));
+    left: 50%;
+    translate: -50% 0;
+    padding: 0.65rem 1rem;
+    border: 1px solid rgb(255 255 255 / 35%);
+    border-radius: 999px;
+    color: white;
+    background: rgb(10 16 34 / 75%);
+    font: inherit;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+
+    &[hidden] {
+      display: none;
+    }
+
+    &:disabled {
+      opacity: 0.85;
+      cursor: default;
+    }
+  }
+
+  .parallax {
+    --half-viewport-width: 50vw;
+    --max-depth: 0.9;
+    --max-horizontal-shift: min(5vw, 100px);
+    --layer-overscan: 4px;
+    --tile-overlap: 4px;
+    --scene-width: min(
+      2000px,
+      calc(
+        100vw + (2 * var(--max-horizontal-shift)) +
+          (2 * var(--layer-overscan))
+      )
+    );
+
+    position: relative;
+    isolation: isolate;
+    width: 100vw;
+    height: 100svh;
+    margin-bottom: 300vh;
+    overflow: clip;
+
+    .layer {
+      --translate-x: calc(
+        -50% + (var(--max-horizontal-shift) * (var(--mouse-x) * -1) *
+              (0.05 + 0.95 * (1 - var(--layer-depth) / var(--max-depth))))
+      );
+
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      display: block;
+      width: var(--scene-width);
+      transform: translate3d(var(--translate-x), 0, 0);
+      backface-visibility: hidden;
+      pointer-events: none;
+      will-change: transform;
+
+      .layer-scroll {
+        position: relative;
+        animation: parallax-scroll-layer 1ms linear both;
+        animation-timeline: scroll(y root);
+        animation-range: 0 100svh;
+        backface-visibility: hidden;
+        will-change: transform;
+      }
+
+      &.clouds {
+        scale: 1;
+        animation: parallax-clouds 30s ease-in-out infinite alternate;
+      }
+
+      &.fog {
+        --layer-depth: 0.1;
+        --fog-height: 50vmin;
+        --translate-x: calc(
+          var(--max-horizontal-shift) * (var(--mouse-x) * -1) *
+            (var(--layer-depth) / var(--max-depth))
+        );
+
+        left: 0;
+        width: 200vw;
+
+        .fog-container {
+          display: grid;
+          grid-template-columns: repeat(2, 100vw);
+          align-items: end;
+          width: 200vw;
+          height: var(--fog-height);
+          animation: parallax-fog 20s linear infinite;
+          will-change: transform, opacity;
+
+          > img {
+            display: block;
+            width: 100%;
+            height: auto;
+          }
+        }
+      }
+
+      &.birds {
+        --layer-depth: 0.5;
+
+        width: 100vw;
+        height: 100svh;
+        opacity: 0.5;
+        filter: blur(0.6px);
+
+        .layer-scroll {
+          height: 100%;
+        }
+
+        .birds-container {
+          display: grid;
+          place-content: center;
+          width: 100%;
+          height: 100%;
+
+          > img {
+            grid-area: 1 / 1;
+            transform: translate3d(
+                calc(
+                  0px - var(--half-viewport-width) -
+                    var(--max-horizontal-shift) - 100%
+                ),
+                -100%,
+                0
+              )
+              scale(0.2);
+            animation: parallax-birds 18s linear infinite;
+            backface-visibility: hidden;
+            will-change: transform;
+
+            &:first-of-type {
+              animation-duration: 15s;
+              animation-delay: 2s;
+            }
+
+            &:nth-child(2) {
+              margin-top: -30px;
+              animation-duration: 16s;
+              animation-delay: 1s;
+            }
+          }
+        }
+      }
+    }
+
+    .scene-strip {
+      &::before,
+      &::after {
+        position: absolute;
+        top: 0;
+        display: none;
+        width: 100%;
+        height: 100%;
+        background-image: var(--layer-image);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        transform: translate3d(0, 0, 0) scaleX(-1);
+        backface-visibility: hidden;
+        content: "";
+      }
+
+      &::before {
+        right: calc(100% - var(--tile-overlap));
+      }
+
+      &::after {
+        left: calc(100% - var(--tile-overlap));
+      }
+
+      .layer-tile {
+        display: block;
+        width: 100%;
+        height: auto;
+        backface-visibility: hidden;
+
+        &.layer-tile--extension {
+          position: absolute;
+          top: 0;
+        }
+
+        &.layer-tile--mirrored {
+          transform: translate3d(0, 0, 0) scaleX(-1);
+        }
+
+        &.layer-tile--left {
+          right: var(--tile-position);
+        }
+
+        &.layer-tile--right {
+          left: var(--tile-position);
+        }
+      }
+    }
+
+    > .scene-layer:first-child {
+      top: 0;
+      height: 100svh;
+
+      .layer-scroll,
+      .layer-tile {
+        height: 100%;
+      }
+    }
+
+    [data-scene-layer="0"] {
+      --layer-depth: 0.6;
+      --layer-image: url("/images/layer_0.webp");
+    }
+
+    [data-scene-layer="1"] {
+      --layer-depth: 0.575;
+      --layer-image: url("/images/layer_1.webp");
+    }
+
+    [data-scene-layer="2"] {
+      --layer-depth: 0.55;
+      --layer-image: url("/images/layer_2.webp");
+    }
+
+    [data-scene-layer="3"] {
+      --layer-depth: 0.5;
+      --layer-image: url("/images/layer_3.webp");
+    }
+
+    [data-scene-layer="4"] {
+      --layer-depth: 0.45;
+      --layer-image: url("/images/layer_4.webp");
+    }
+
+    [data-scene-layer="5"] {
+      --layer-depth: 0.4;
+      --layer-image: url("/images/layer_5.webp");
+    }
+
+    [data-scene-layer="6"] {
+      --layer-depth: 0.3;
+      --layer-image: url("/images/layer_6.webp");
+    }
+
+    [data-scene-layer="7"] {
+      --layer-depth: 0;
+      --layer-image: url("/images/layer_7.webp");
+    }
+
+    @media (min-width: 2001px) {
+      -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        black calc(50vw - 1000px),
+        black calc(50vw + 1000px),
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        black calc(50vw - 1000px),
+        black calc(50vw + 1000px),
+        transparent 100%
+      );
+
+      .scene-strip::before,
+      .scene-strip::after {
+        display: block;
+      }
+    }
+
+    @media (max-width: 768px) and (orientation: portrait) {
+      --max-horizontal-shift: min(8vw, 48px);
+      --scene-width: clamp(100vw, 100svh, 200vw);
+
+      .layer {
+        --translate-x: calc(
+          var(--max-horizontal-shift) * ((var(--mouse-x) - 1) / 2) *
+            (0.05 + 0.95 * (1 - var(--layer-depth) / var(--max-depth)))
+        );
+
+        right: calc(var(--max-horizontal-shift) * -1);
+        left: auto;
+        transform-origin: right bottom;
+
+        &.fog {
+          right: auto;
+          left: 0;
+        }
+      }
+
+      > .scene-layer:last-child {
+        bottom: -1px;
+      }
+    }
+  }
+}
+
+@keyframes parallax-scroll-layer {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, calc(100svh * var(--layer-depth)), 0);
+  }
+}
+
+@keyframes parallax-clouds {
+  to {
+    scale: 1.4;
+  }
+}
+
+@keyframes parallax-fog {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.2;
+  }
+
+  10% {
+    transform: translate3d(-5%, 0, 0);
+    opacity: 0.3;
+  }
+
+  20% {
+    transform: translate3d(-10%, 0, 0);
+    opacity: 0.2;
+  }
+
+  30% {
+    transform: translate3d(-15%, 0, 0);
+    opacity: 0.4;
+  }
+
+  40% {
+    transform: translate3d(-20%, 0, 0);
+    opacity: 0.35;
+  }
+
+  50% {
+    transform: translate3d(-25%, 0, 0);
+    opacity: 0.6;
+  }
+
+  60% {
+    transform: translate3d(-30%, 0, 0);
+    opacity: 0.45;
+  }
+
+  70% {
+    transform: translate3d(-35%, 0, 0);
+    opacity: 0.55;
+  }
+
+  80% {
+    transform: translate3d(-40%, 0, 0);
+    opacity: 0.3;
+  }
+
+  90% {
+    transform: translate3d(-45%, 0, 0);
+    opacity: 0.45;
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+    opacity: 0.2;
+  }
+}
+
+@keyframes parallax-birds {
+  from {
+    transform: translate3d(
+        calc(
+          0px - var(--half-viewport-width) - var(--max-horizontal-shift) - 100%
+        ),
+        -100%,
+        0
+      )
+      scale(0.2);
+  }
+
+  to {
+    transform: translate3d(
+        calc(
+          var(--half-viewport-width) + var(--max-horizontal-shift) + 100%
+        ),
+        -100%,
+        0
+      )
+      scale(0.2);
+  }
+}
