@@ -14,22 +14,10 @@
   user-select: none;
 }
 
-@property --scroll-viewport-y-shift {
-  syntax: "<length>";
-  initial-value: 0px;
-  inherits: true;
-}
-
 @property --mouse-x {
   syntax: "<number>";
   initial-value: 0;
   inherits: true;
-}
-
-@keyframes shift-down {
-  to {
-    --scroll-viewport-y-shift: 100svh;
-  }
 }
 
 html,
@@ -44,10 +32,6 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   background: #0a1022;
-
-  animation: shift-down 1ms linear both;
-  animation-timeline: scroll(y root);
-  animation-range: 0 100svh;
 }
 
 #highlighter {
@@ -55,13 +39,18 @@ body {
 }
 
 .parallax {
+  --half-viewport-width: 50vw;
   --max-depth: 0.9;
-  --max-horizontal-shift: 5vw;
+  --max-horizontal-shift: min(5vw, 100px);
   /* Keep transformed image edges just outside the clip at every DPR. */
   --layer-overscan: 4px;
-  --scene-width: calc(
-    100vw + (2 * var(--max-horizontal-shift)) +
-      (2 * var(--layer-overscan))
+  --tile-overlap: 4px;
+  --scene-width: min(
+    2000px,
+    calc(
+      100vw + (2 * var(--max-horizontal-shift)) +
+        (2 * var(--layer-overscan))
+    )
   );
 
   width: 100vw;
@@ -76,7 +65,6 @@ body {
       -50% + (var(--max-horizontal-shift) * (var(--mouse-x) * -1) *
             (0.05 + 0.95 * (1 - var(--layer-depth) / var(--max-depth))))
     );
-    --translate-y: calc(var(--scroll-viewport-y-shift) * var(--layer-depth));
     --fog-height: 50vmin;
 
     width: var(--scene-width);
@@ -84,9 +72,68 @@ body {
     bottom: 0;
     left: 50%;
     display: block;
-    transform: translate3d(var(--translate-x), var(--translate-y), 0);
+    transform: translate3d(var(--translate-x), 0, 0);
+    will-change: transform;
     backface-visibility: hidden;
     pointer-events: none;
+
+    .layer-scroll {
+      position: relative;
+      animation: scroll-layer 1ms linear both;
+      animation-timeline: scroll(y root);
+      animation-range: 0 100svh;
+      will-change: transform;
+      backface-visibility: hidden;
+    }
+
+    .scene-strip {
+      &::before,
+      &::after {
+        content: none;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-image: var(--layer-image);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        transform: translate3d(0, 0, 0) scaleX(-1);
+        backface-visibility: hidden;
+      }
+
+      &::before {
+        right: calc(100% - var(--tile-overlap));
+      }
+
+      &::after {
+        left: calc(100% - var(--tile-overlap));
+      }
+
+      .layer-tile {
+        display: block;
+        width: 100%;
+        height: auto;
+        backface-visibility: hidden;
+      }
+
+      .layer-tile--extension {
+        position: absolute;
+        top: 0;
+      }
+
+      .layer-tile--mirrored {
+        transform: translate3d(0, 0, 0) scaleX(-1);
+      }
+
+      .layer-tile--left {
+        right: var(--tile-position);
+      }
+
+      .layer-tile--right {
+        left: var(--tile-position);
+      }
+    }
 
     &.clouds {
       scale: 1;
@@ -107,8 +154,9 @@ body {
         width: 200vw;
         height: var(--fog-height);
         display: grid;
-        grid-template-columns: 100vw 100vw;
+        grid-template-columns: repeat(2, 100vw);
         animation: fog 20s linear infinite;
+        will-change: transform, opacity;
         align-items: end;
 
         & > img {
@@ -120,9 +168,14 @@ body {
     }
 
     &.birds {
+      width: 100vw;
       filter: blur(0.6px);
       opacity: 0.5;
       height: 100svh;
+
+      .layer-scroll {
+        height: 100%;
+      }
 
       .birds-container {
         display: grid;
@@ -133,11 +186,15 @@ body {
         & > img {
           grid-area: 1 / 1;
           transform: translate3d(
-            calc(-50vw - var(--max-horizontal-shift) - 100%),
+            calc(
+              0px - var(--half-viewport-width) - var(--max-horizontal-shift) -
+                100%
+            ),
             -100%,
             0
           ) scale(0.2);
           animation: birds 18s linear infinite;
+          will-change: transform;
           backface-visibility: hidden;
 
           &:first-of-type {
@@ -155,9 +212,40 @@ body {
     }
   }
 
-  & > img:first-of-type {
+  & > .scene-layer:first-child {
     height: 100svh;
     top: 0;
+
+    .layer-scroll,
+    .layer-tile {
+      height: 100%;
+    }
+  }
+}
+
+@media (min-width: 2001px) {
+  .parallax {
+    /* Keep the original 2000px canvas fully visible while its mirrored
+     * extensions fade into the page background toward either viewport edge. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black calc(50vw - 1000px),
+      black calc(50vw + 1000px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black calc(50vw - 1000px),
+      black calc(50vw + 1000px),
+      transparent 100%
+    );
+
+    .scene-strip::before,
+    .scene-strip::after {
+      content: "";
+    }
   }
 }
 
@@ -187,6 +275,20 @@ body {
   }
 }
 
+@keyframes scroll-layer {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(
+      0,
+      calc(100svh * var(--layer-depth)),
+      0
+    );
+  }
+}
+
 @keyframes fog {
   0% {
     transform: translate3d(0, 0, 0);
@@ -194,52 +296,52 @@ body {
   }
 
   10% {
-    transform: translate3d(-10vw, 0, 0);
+    transform: translate3d(-5%, 0, 0);
     opacity: 0.3;
   }
 
   20% {
-    transform: translate3d(-20vw, 0, 0);
+    transform: translate3d(-10%, 0, 0);
     opacity: 0.2;
   }
 
   30% {
-    transform: translate3d(-30vw, 0, 0);
+    transform: translate3d(-15%, 0, 0);
     opacity: 0.4;
   }
 
   40% {
-    transform: translate3d(-40vw, 0, 0);
+    transform: translate3d(-20%, 0, 0);
     opacity: 0.35;
   }
 
   50% {
-    transform: translate3d(-50vw, 0, 0);
+    transform: translate3d(-25%, 0, 0);
     opacity: 0.6;
   }
 
   60% {
-    transform: translate3d(-60vw, 0, 0);
+    transform: translate3d(-30%, 0, 0);
     opacity: 0.45;
   }
 
   70% {
-    transform: translate3d(-70vw, 0, 0);
+    transform: translate3d(-35%, 0, 0);
     opacity: 0.55;
   }
 
   80% {
-    transform: translate3d(-80vw, 0, 0);
+    transform: translate3d(-40%, 0, 0);
     opacity: 0.3;
   }
 
   90% {
-    transform: translate3d(-90vw, 0, 0);
+    transform: translate3d(-45%, 0, 0);
     opacity: 0.45;
   }
 
   100% {
-    transform: translate3d(-100vw, 0, 0);
+    transform: translate3d(-50%, 0, 0);
     opacity: 0.2;
   }
 }
@@ -253,14 +355,18 @@ body {
 @keyframes birds {
   from {
     transform: translate3d(
-      calc(-50vw - var(--max-horizontal-shift) - 100%),
+      calc(
+        0px - var(--half-viewport-width) - var(--max-horizontal-shift) - 100%
+      ),
       -100%,
       0
     ) scale(0.2);
   }
   to {
     transform: translate3d(
-      calc(50vw + var(--max-horizontal-shift) + 100%),
+      calc(
+        var(--half-viewport-width) + var(--max-horizontal-shift) + 100%
+      ),
       -100%,
       0
     ) scale(0.2);
