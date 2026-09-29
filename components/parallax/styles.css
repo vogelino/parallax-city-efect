@@ -372,12 +372,9 @@
         }
 
         &.copy-layer {
+          --copy-max-horizontal-shift: min(1.5vw, 6px);
           --translate-x: calc(
-            -50% +
-              (
-                var(--max-horizontal-shift) * (var(--mouse-x) * -1) *
-                  (0.05 + 0.95 * (1 - var(--layer-depth) / var(--max-depth)))
-              )
+            -50% + (var(--copy-max-horizontal-shift) * var(--mouse-x))
           );
 
           right: auto;
