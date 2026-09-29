@@ -1,7 +1,6 @@
 {
-  "title": "HTML + CSS",
-  "description": "A template for HTML and CSS",
-  "tags": ["html", "css"],
-  "published": true,
-  "runtime": "static"
+  "title": "Parallax city · Vite",
+  "description": "A vanilla JavaScript parallax city built with Vite",
+  "tags": ["html", "css", "javascript", "vite"],
+  "published": true
 }
