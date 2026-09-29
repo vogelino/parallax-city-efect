@@ -28,7 +28,7 @@
 
 @keyframes shift-down {
   to {
-    --scroll-viewport-y-shift: 100vh;
+    --scroll-viewport-y-shift: 100svh;
   }
 }
 
@@ -40,14 +40,14 @@ body {
 body {
   margin: 0;
   width: 100svw;
-  min-height: 100vh;
+  min-height: 100svh;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   background: #0a1022;
 
   animation: shift-down 1ms linear both;
   animation-timeline: scroll(y root);
-  animation-range: 0 100vh;
+  animation-range: 0 100svh;
 }
 
 #highlighter {
@@ -59,9 +59,13 @@ body {
   --max-horizontal-shift: 5vw;
   /* Keep transformed image edges just outside the clip at every DPR. */
   --layer-overscan: 4px;
+  --scene-width: calc(
+    100vw + (2 * var(--max-horizontal-shift)) +
+      (2 * var(--layer-overscan))
+  );
 
   width: 100vw;
-  height: 100vh;
+  height: 100svh;
   margin-bottom: 300vh;
   position: relative;
   isolation: isolate;
@@ -75,10 +79,7 @@ body {
     --translate-y: calc(var(--scroll-viewport-y-shift) * var(--layer-depth));
     --fog-height: 50vmin;
 
-    width: calc(
-      100vw + (2 * var(--max-horizontal-shift)) +
-        (2 * var(--layer-overscan))
-    );
+    width: var(--scene-width);
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -121,7 +122,7 @@ body {
     &.birds {
       filter: blur(0.6px);
       opacity: 0.5;
-      height: 100vh;
+      height: 100svh;
 
       .birds-container {
         display: grid;
@@ -155,8 +156,34 @@ body {
   }
 
   & > img:first-of-type {
-    height: 100vh;
+    height: 100svh;
     top: 0;
+  }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .parallax {
+    /*
+     * Use the short viewport edge at 1x and progressively zoom toward 2x as
+     * the screen gets taller. At 2x, half of the shared illustration canvas
+     * remains visible. Keeping one width for every layer preserves alignment.
+     */
+    --max-horizontal-shift: 0vw;
+    --scene-width: clamp(100vw, 100svh, 200vw);
+
+    .layer {
+      left: auto;
+      right: 0;
+      --translate-x: 0px;
+      transform-origin: right bottom;
+
+      &.fog {
+        /* The two-tile fog loop travels left, so it must start at the
+         * viewport's left edge rather than inherit the scene's right anchor. */
+        left: 0;
+        right: auto;
+      }
+    }
   }
 }
 
