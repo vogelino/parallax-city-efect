@@ -1,4 +1,9 @@
 :root {
+  --beige-light-color: #eadfdc;
+  --beige-dark-color: #5f545d;
+  --blue-dark-color: #0a1022;
+  --foreground-color: var(--beige-light-color);
+  --background-color: var(--blue-dark-color);
   color-scheme: light dark;
   font-size: 16px;
 }
@@ -21,7 +26,17 @@ body {
   min-height: 100svh;
   margin: 0;
   overflow-x: hidden;
-  background: #0a1022;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background: var(--background-color);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
 }

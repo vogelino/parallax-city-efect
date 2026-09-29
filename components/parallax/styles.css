@@ -42,8 +42,7 @@
     --scene-width: min(
       2000px,
       calc(
-        100vw + (2 * var(--max-horizontal-shift)) +
-          (2 * var(--layer-overscan))
+        100vw + (2 * var(--max-horizontal-shift)) + (2 * var(--layer-overscan))
       )
     );
 
@@ -51,13 +50,15 @@
     isolation: isolate;
     width: 100vw;
     height: 100svh;
-    margin-bottom: 300vh;
     overflow: clip;
 
     .layer {
       --translate-x: calc(
-        -50% + (var(--max-horizontal-shift) * (var(--mouse-x) * -1) *
-              (0.05 + 0.95 * (1 - var(--layer-depth) / var(--max-depth))))
+        -50% +
+          (
+            var(--max-horizontal-shift) * (var(--mouse-x) * -1) *
+              (0.05 + 0.95 * (1 - var(--layer-depth) / var(--max-depth)))
+          )
       );
 
       position: absolute;
@@ -156,6 +157,75 @@
               animation-delay: 1s;
             }
           }
+        }
+      }
+
+      &.copy-layer {
+        --layer-depth: 0.15;
+
+        top: 0;
+        width: 100vw;
+        height: 100svh;
+        color: var(--background-color);
+
+        .layer-scroll {
+          display: grid;
+          place-items: center;
+          width: 100%;
+          height: 100%;
+        }
+
+        .parallax-copy {
+          display: grid;
+          justify-items: center;
+          width: min(100%, 100rem);
+          padding-inline: clamp(1rem, 4vw, 4rem);
+          text-align: center;
+          text-wrap: balance;
+          transform: translate3d(0, -25vh, 0);
+        }
+
+        .parallax-copy__eyebrow,
+        .parallax-copy__tagline {
+          padding: clamp(0.35rem, 0.75vw, 0.65rem) clamp(0.65rem, 1.4vw, 1.2rem);
+          border-radius: 0.6em;
+          font-size: clamp(1rem, 2vw, 1.5rem);
+          line-height: 1;
+          font-style: italic;
+          font-family: Giorgia, serif;
+        }
+
+        .parallax-copy__eyebrow {
+          margin-bottom: 2vw;
+        }
+
+        .parallax-copy__title {
+          color: var(--background-color);
+          width: min(100%, 75rem, 300svh);
+          line-height: 0;
+
+          > svg {
+            display: block;
+            overflow: visible;
+            width: 100%;
+            height: auto;
+
+            > path {
+              fill: none;
+            }
+
+            text {
+              fill: currentColor;
+              font-family: Georgia, serif;
+              font-size: 180px;
+              font-weight: 900;
+              letter-spacing: -0.04em;
+            }
+          }
+        }
+
+        .parallax-copy__tagline {
+          transform: translate3d(0, -6vw, 0);
         }
       }
     }
@@ -300,6 +370,20 @@
           right: auto;
           left: 0;
         }
+
+        &.copy-layer {
+          --translate-x: calc(
+            -50% +
+              (
+                var(--max-horizontal-shift) * (var(--mouse-x) * -1) *
+                  (0.05 + 0.95 * (1 - var(--layer-depth) / var(--max-depth)))
+              )
+          );
+
+          right: auto;
+          left: 50%;
+          transform-origin: center;
+        }
       }
 
       > .scene-layer:last-child {
@@ -396,12 +480,31 @@
 
   to {
     transform: translate3d(
-        calc(
-          var(--half-viewport-width) + var(--max-horizontal-shift) + 100%
-        ),
+        calc(var(--half-viewport-width) + var(--max-horizontal-shift) + 100%),
         -100%,
         0
       )
       scale(0.2);
+  }
+}
+
+.fragrance-story {
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: clamp(4rem, 12vw, 10rem) clamp(1.5rem, 6vw, 6rem);
+  color: var(--foreground-color);
+  text-align: center;
+
+  > p {
+    max-width: 48rem;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.35rem, 3vw, 2.5rem);
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  em {
+    font-style: italic;
   }
 }
